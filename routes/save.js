@@ -27,4 +27,32 @@ router.post("/save", (req, res) => {
   );
 });
 
+router.get("/file_names", (req, res) => {
+  fs.readdir("files", (err, files) => {
+    if (err) {
+      res.status(500);
+      res.json(err);
+    }
+    const arrayOfFiles = [];
+    files.forEach((file) => {
+      arrayOfFiles.push(file);
+    });
+    res.status(200);
+    res.json(arrayOfFiles);
+  });
+});
+
+router.get("/game_stats/:fileName", (req, res) => {
+  const { fileName } = req.params;
+  fs.readFile(`files/${fileName}`, "utf8", (err, data) => {
+    if (err) {
+      res.status(500);
+      res.json({ message: "błąd" });
+    }
+    console.log(data);
+    res.status(200);
+    res.json(data);
+  });
+});
+
 module.exports = router;
