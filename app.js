@@ -4,6 +4,15 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var bodyParser = require("body-parser");
 var cors = require("cors");
+const mongoose = require("mongoose");
+const config = require("./config");
+
+mongoose.connect(config.db, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+});
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
 
 var { index, save } = require("./routes/index");
 

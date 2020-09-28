@@ -2,31 +2,21 @@ var express = require("express");
 var router = express.Router();
 const fs = require("fs");
 const path = require("path");
+const { Game } = require("../models");
 
-router.post("/save", (req, res) => {
-  const { gameData } = req.body;
+router.post("/save", async (req, res) => {
+  const { stats, countOfDiceRolls } = req.body;
+  console.log(req.body);
   const date = new Date();
-  const dateParsed = date.toLocaleDateString("en-US");
-  const dirName = path.join(
-    __dirname,
-    `/../files/catan-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}.json`
-  );
-  fs.writeFile(dirName, JSON.stringify(gameData), (err) => {
-    if (err) {
-      res.status(500);
-      res.json({ ...err, message: "coś się zjebało" });
-    }
+  const name = `catan-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}`;
+  try {
+    await Game.insertMany([{ stats, countOfDiceRolls }]);
     res.status(200);
-    res.json({
-      message: `Poprawnie zapisano plik catan-${date.toLocaleDateString(
-        "pl-PL",
-        {
-          hour: "2-digit",
-          minute: "2-digit",
-        }
-      )}`,
-    });
-  });
+    res.json({ message: `Pomyślnie dodano do bazy danych gre ${name}` });
+  } catch (err) {
+    res.status(500);
+    res.json({ message: `Nie udało się dodać do bazy danych` });
+  }
 });
 
 router.get("/file_names", (req, res) => {
