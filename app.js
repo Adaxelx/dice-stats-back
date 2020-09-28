@@ -14,7 +14,7 @@ mongoose.connect(config.db, {
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 
-var { index, save } = require("./routes/index");
+var { index, game } = require("./routes/index");
 
 var app = express();
 
@@ -27,6 +27,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", index);
-app.use("/file", save);
+app.use("/game", game);
 
 module.exports = app;
