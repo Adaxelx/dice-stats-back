@@ -6,7 +6,7 @@ router.post("/save", (req, res) => {
   const { gameData } = req.body;
   const date = new Date();
   fs.writeFile(
-    `files/catan-${date.toLocaleDateString("pl-PL", {
+    `${__dirname}/files/catan-${date.toLocaleDateString("pl-PL", {
       hour: "2-digit",
       minute: "2-digit",
     })}.json`,
@@ -28,7 +28,7 @@ router.post("/save", (req, res) => {
 });
 
 router.get("/file_names", (req, res) => {
-  fs.readdir("files", (err, files) => {
+  fs.readdir(`${__dirname}/files`, (err, files) => {
     if (err) {
       res.status(500);
       res.json({ ...err, message: "coś się zjebało" });
@@ -44,7 +44,7 @@ router.get("/file_names", (req, res) => {
 
 router.get("/game_stats/:fileName", (req, res) => {
   const { fileName } = req.params;
-  fs.readFile(`files/${fileName}`, "utf8", (err, data) => {
+  fs.readFile(`${__dirname}/files/${fileName}`, "utf8", (err, data) => {
     if (err) {
       res.status(500);
       res.json({ message: "błąd" });
