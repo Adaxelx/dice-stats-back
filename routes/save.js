@@ -33,7 +33,7 @@ router.post("/save", (req, res) => {
 
 router.get("/file_names", (req, res) => {
   // res.json(`${__dirname}/files`);
-  const dirName = path.join(__dirname, `/../files`);
+  const dirName = path.join(__dirname, `/files`);
   fs.readdir(dirName, (err, files) => {
     if (err) {
       res.status(500);
@@ -54,7 +54,7 @@ router.get("/file_names", (req, res) => {
 
 router.get("/game_stats/:fileName", (req, res) => {
   const { fileName } = req.params;
-  const dirName = path.join(__dirname, `/../files/${fileName}`);
+  const dirName = path.join(__dirname, `/files/${fileName}`);
   fs.readFile(dirName, "utf8", (err, data) => {
     if (err) {
       res.status(500);
