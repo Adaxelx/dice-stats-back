@@ -34,7 +34,8 @@ router.get("/file_names", (req, res) => {
       res.json({ ...err, message: "coś się zjebało" });
     }
     const arrayOfFiles = [];
-    files.forEach((file) => {
+    console.log(files);
+    files?.forEach((file) => {
       arrayOfFiles.push(file);
     });
     res.status(200);
