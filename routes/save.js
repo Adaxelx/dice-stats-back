@@ -9,7 +9,7 @@ router.post("/save", (req, res) => {
   const dateParsed = date.toLocaleDateString("en-US");
   const dirName = path.join(
     __dirname,
-    `/../files/catan-${date.getFullYear()}-${date.getMonth()}-${date.getDay()}-${date.getHours()}-${date.getMinutes()}.json`
+    `/../files/catan-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}.json`
   );
   fs.writeFile(dirName, JSON.stringify(gameData), (err) => {
     if (err) {
