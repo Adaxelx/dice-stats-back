@@ -14,10 +14,10 @@ router.post("/save", (req, res) => {
     })}.json`
   );
   fs.writeFile(dirName, JSON.stringify(gameData), (err) => {
-    if (err) {
-      res.status(500);
-      res.json({ ...err, message: "coś się zjebało" });
-    }
+    // if (err) {
+    //   res.status(500);
+    //   res.json({ ...err, message: "coś się zjebało" });
+    // }
     res.status(200);
     res.json({
       message: `Poprawnie zapisano plik catan-${date.toLocaleDateString(
