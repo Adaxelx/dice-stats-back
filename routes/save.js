@@ -31,7 +31,7 @@ router.get("/file_names", (req, res) => {
   fs.readdir("files", (err, files) => {
     if (err) {
       res.status(500);
-      res.json(err);
+      res.json({ ...err, message: "coś się zjebało" });
     }
     const arrayOfFiles = [];
     files.forEach((file) => {
