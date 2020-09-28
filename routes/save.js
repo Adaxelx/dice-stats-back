@@ -6,7 +6,11 @@ const path = require("path");
 router.post("/save", (req, res) => {
   const { gameData } = req.body;
   const date = new Date();
-  const dirName = path.join(__dirname, `/../files/catan.json`);
+  const dateParsed = date.toLocaleDateString("en-US");
+  const dirName = path.join(
+    __dirname,
+    `/../files/catan-${dateParsed}-${date.getHours()}-${date.getMinutes()}.json`
+  );
   fs.writeFile(dirName, JSON.stringify(gameData), (err) => {
     if (err) {
       res.status(500);
