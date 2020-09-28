@@ -12,7 +12,10 @@ router.post("/save", (req, res) => {
     })}.json`,
     JSON.stringify(gameData),
     (err) => {
-      if (err) throw err;
+      if (err) {
+        res.status(500);
+        res.json({ ...err, message: "coś się zjebało" });
+      }
       res.status(200);
       res.json({
         message: `Poprawnie zapisano plik catan-${date.toLocaleDateString(
