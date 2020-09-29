@@ -16,7 +16,7 @@ const playerSchema = new Schema({
     11: Number,
     12: Number,
   },
-
+  index: Number,
   gameId: Number,
 });
 
