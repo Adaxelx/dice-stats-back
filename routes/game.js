@@ -13,7 +13,19 @@ router.post("/add", async (req, res) => {
   const { throws, players, isExtension } = req.body;
   const playersArr = [...players];
   const stats = isExtension ? { ...emptyDiceStatsExt } : { ...emptyDiceStats };
-  throws.forEach((roll) => (stats[roll.value] += 1));
+  playersArr.forEach((player) => {
+    if (isExtension) player.stats = { ...emptyDiceStatsExt };
+    else player.stats = { ...emptyDiceStats };
+  });
+  throws.forEach((roll) => {
+    stats[roll.value] += 1;
+    playersArr.forEach((player) => {
+      if (player.index === roll.player) {
+        player.stats[roll.value] += 1;
+      }
+    });
+  });
+
   const longestStreak = (() => {
     let number = throws[0].value;
     let streak = 0;
