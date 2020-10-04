@@ -9,7 +9,7 @@ const {
   emptyDiceStatsExt,
 } = require("../constants/diceNumbers");
 
-router.post("/add", async (req, res) => {
+const calculateStats = (req, res) => {
   const { throws, players, isExtension } = req.body;
   const playersArr = [...players];
   const stats = isExtension ? { ...emptyDiceStatsExt } : { ...emptyDiceStats };
@@ -81,20 +81,33 @@ router.post("/add", async (req, res) => {
       paper: [],
       cloth: [],
     };
-    playersArr.forEach(
-      (player) =>
-        (player.resourcesStats = {
-          total: 0,
-          ore: [],
-          grain: [],
-          brick: [],
-          lumber: [],
-          sheep: [],
-          coin: [],
-          paper: [],
-          cloth: [],
-        })
-    );
+    playersArr.forEach((player) => {
+      player.resourcesStats = {
+        total: 0,
+        ore: [],
+        grain: [],
+        brick: [],
+        lumber: [],
+        sheep: [],
+        coin: [],
+        paper: [],
+        cloth: [],
+      };
+      player.buildings.forEach(
+        (building) =>
+          (building.resourcesStats = {
+            total: 0,
+            ore: [],
+            grain: [],
+            brick: [],
+            lumber: [],
+            sheep: [],
+            coin: [],
+            paper: [],
+            cloth: [],
+          })
+      );
+    });
   } else {
     resourcesStats = {
       total: 0,
@@ -104,20 +117,28 @@ router.post("/add", async (req, res) => {
       lumber: [],
       sheep: [],
     };
-    playersArr.forEach(
-      (player) =>
-        (player.resourcesStats = {
-          total: 0,
-          ore: [],
-          grain: [],
-          brick: [],
-          lumber: [],
-          sheep: [],
-        })
-    );
+    playersArr.forEach((player) => {
+      player.resourcesStats = {
+        total: 0,
+        ore: [],
+        grain: [],
+        brick: [],
+        lumber: [],
+        sheep: [],
+      };
+      player.buildings.forEach(
+        (building) =>
+          (building.resourcesStats = {
+            total: 0,
+            ore: [],
+            grain: [],
+            brick: [],
+            lumber: [],
+            sheep: [],
+          })
+      );
+    });
   }
-
-  console.log(resourcesStats);
 
   throws.forEach((throwVal, i) => {
     if (typeof throwVal.value === "number") {
@@ -126,10 +147,11 @@ router.post("/add", async (req, res) => {
           if (building.buildedInThrow < i + 1) {
             building.resources.forEach((resource) => {
               if (resource.value === throwVal.value) {
-                console.log("xd");
                 resourcesStats[resource.type].push(throwVal.value);
                 player.resourcesStats[resource.type].push(throwVal.value);
                 player.resourcesStats.total += 1;
+                building.resourcesStats[resource.type].push(throwVal.value);
+                building.resourcesStats.total += 1;
                 resourcesStats.total += 1;
               }
             });
@@ -138,24 +160,48 @@ router.post("/add", async (req, res) => {
       });
     }
   });
-
   const date = new Date();
   const name = `catan-${date.toLocaleString()}`;
+
+  return {
+    name,
+    history: throws,
+    stats,
+    longestStreak,
+    players: playersArr,
+    countOfDiceRolls: isExtension ? throws.length / 2 : throws.length,
+    isExtension,
+    resourcesStats,
+  };
+};
+
+router.post("/add", async (req, res) => {
+  const stats = calculateStats(req, res);
   try {
-    await Game.insertMany([
-      {
-        name,
-        history: throws,
-        stats,
-        longestStreak,
-        players: playersArr,
-        countOfDiceRolls: isExtension ? throws.length / 2 : throws.length,
-        isExtension,
-        resourcesStats,
-      },
-    ]);
+    const response = await Game.insertMany([stats]);
     res.status(200);
-    res.json({ message: `Pomyślnie dodano do bazy danych gre ${name}` });
+    res.json({
+      message: `Pomyślnie dodano do bazy danych gre ${stats.name}`,
+      id: response[0]._id,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500);
+    res.json({ message: `Nie udało się dodać do bazy danych` });
+  }
+});
+
+router.put("/edit/:id", async (req, res) => {
+  const { id } = req.params;
+  const stats = calculateStats(req, res);
+  try {
+    const response = await Game.findByIdAndUpdate({ _id: id }, stats);
+
+    res.status(200);
+    res.json({
+      message: `Pomyślnie edytowano gre ${stats.name}`,
+      id,
+    });
   } catch (err) {
     console.log(err);
     res.status(500);
