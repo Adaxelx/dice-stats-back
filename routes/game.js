@@ -164,6 +164,7 @@ const calculateStats = (req, res) => {
   const name = `catan-${date.toLocaleString()}`;
 
   return {
+    date,
     name,
     history: throws,
     stats,
@@ -212,11 +213,16 @@ router.put("/edit/:id", async (req, res) => {
 router.get("/history/", async (req, res) => {
   const { page, pageSize } = req.query;
   const skips = (page - 1) * pageSize;
+
   try {
+    const count = await Game.countDocuments({});
+
     const response = await Game.find()
+      .sort({ date: -1 })
       .skip(skips)
       .limit(pageSize * 1);
-    res.json(response);
+
+    res.json({ data: response, count });
   } catch (err) {
     res.status(500);
     res.json({ message: `Nie udało się pobrać bazy danych` });
