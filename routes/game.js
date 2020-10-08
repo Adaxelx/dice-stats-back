@@ -33,21 +33,24 @@ const calculateStats = (req, res) => {
     let startIndex = 0;
     let highestNumber = 0;
     throws.forEach((roll, i) => {
-      if (!roll.value.length) {
-        if (number === roll.value) {
-          streak++;
-        } else {
-          streak = 1;
-        }
-        number = roll.value;
+      if (typeof roll.value === "number") {
+        if ((isExtension && !(i % 2)) || !isExtension) {
+          if (number === roll.value) {
+            streak++;
+          } else {
+            streak = 1;
+          }
+          number = roll.value;
 
-        if (streak > highestStreak) {
-          highestStreak = streak;
-          highestNumber = number;
-          startIndex = i - streak + 1;
+          if (streak > highestStreak) {
+            highestStreak = streak;
+            highestNumber = number;
+            startIndex = isExtension ? i / 2 - streak + 1 : i - streak + 1;
+          }
         }
       }
     });
+
     return { diceNumber: highestNumber, streak: highestStreak, startIndex };
   })();
 
