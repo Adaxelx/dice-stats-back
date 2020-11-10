@@ -197,16 +197,16 @@ router.post("/add", async (req, res) => {
       const response = await Game.insertMany([stats]);
       res.status(200);
       res.json({
-        message: `Pomyślnie dodano do bazy danych gre ${stats.name}`,
+        message: `Successfuly added game`,
         id: response[0]._id,
       });
     } catch (err) {
       res.status(500);
-      res.json({ message: `Nie udało się dodać do bazy danych` });
+      res.json({ message: `Db fail.` });
     }
   } else {
     res.status(403);
-    res.json({ message: `Nie masz dostępu do tych treści.` });
+    res.json({ message: `You do not have access to this part of website.` });
   }
 });
 
@@ -219,16 +219,16 @@ router.put("/edit/:id", async (req, res) => {
 
       res.status(200);
       res.json({
-        message: `Pomyślnie edytowano gre ${stats.name}`,
+        message: `Successfully edited game.`,
         id,
       });
     } catch (err) {
       res.status(500);
-      res.json({ message: `Nie udało się dodać do bazy danych` });
+      res.json({ message: `Data adding fail.` });
     }
   } else {
     res.status(403);
-    res.json({ message: `Nie masz dostępu do tych treści.` });
+    res.json({ message: `You do not have access to this part of website.` });
   }
 });
 
@@ -248,11 +248,11 @@ router.get("/history/", async (req, res) => {
       res.json({ data: response, count });
     } catch (err) {
       res.status(500);
-      res.json({ message: `Nie udało się pobrać bazy danych` });
+      res.json({ message: `DB error` });
     }
   } else {
     res.status(403);
-    res.json({ message: `Nie masz dostępu do tych treści.` });
+    res.json({ message: `You do not have access to this part of website.` });
   }
 });
 
