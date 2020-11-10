@@ -2,12 +2,17 @@ var express = require("express");
 var router = express.Router();
 const fs = require("fs");
 const path = require("path");
-const { Game } = require("../models");
+const { Game, Authorizate } = require("../models");
 const {
   diceNumbers,
   emptyDiceStats,
   emptyDiceStatsExt,
 } = require("../constants/diceNumbers");
+
+const isValid = async (token) => {
+  const tokens = await Authorizate.find();
+  return tokens.map(({ token }) => token).includes(token);
+};
 
 const calculateStats = (req, res) => {
   const { throws, players, isExtension } = req.body;
@@ -180,55 +185,68 @@ const calculateStats = (req, res) => {
 };
 
 router.post("/add", async (req, res) => {
-  const stats = calculateStats(req, res);
-  try {
-    const response = await Game.insertMany([stats]);
-    res.status(200);
-    res.json({
-      message: `Pomyślnie dodano do bazy danych gre ${stats.name}`,
-      id: response[0]._id,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500);
-    res.json({ message: `Nie udało się dodać do bazy danych` });
+  if (await isValid(req.headers.authorization)) {
+    const stats = calculateStats(req, res);
+    try {
+      const response = await Game.insertMany([stats]);
+      res.status(200);
+      res.json({
+        message: `Pomyślnie dodano do bazy danych gre ${stats.name}`,
+        id: response[0]._id,
+      });
+    } catch (err) {
+      res.status(500);
+      res.json({ message: `Nie udało się dodać do bazy danych` });
+    }
+  } else {
+    res.status(403);
+    res.json({ message: `Nie masz dostępu do tych treści.` });
   }
 });
 
 router.put("/edit/:id", async (req, res) => {
-  const { id } = req.params;
-  const stats = calculateStats(req, res);
-  try {
-    const response = await Game.findByIdAndUpdate({ _id: id }, stats);
+  if (await isValid(req.headers.authorization)) {
+    const { id } = req.params;
+    const stats = calculateStats(req, res);
+    try {
+      const response = await Game.findByIdAndUpdate({ _id: id }, stats);
 
-    res.status(200);
-    res.json({
-      message: `Pomyślnie edytowano gre ${stats.name}`,
-      id,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500);
-    res.json({ message: `Nie udało się dodać do bazy danych` });
+      res.status(200);
+      res.json({
+        message: `Pomyślnie edytowano gre ${stats.name}`,
+        id,
+      });
+    } catch (err) {
+      res.status(500);
+      res.json({ message: `Nie udało się dodać do bazy danych` });
+    }
+  } else {
+    res.status(403);
+    res.json({ message: `Nie masz dostępu do tych treści.` });
   }
 });
 
 router.get("/history/", async (req, res) => {
-  const { page, pageSize } = req.query;
-  const skips = (page - 1) * pageSize;
+  if (await isValid(req.headers.authorization)) {
+    const { page, pageSize } = req.query;
+    const skips = (page - 1) * pageSize;
 
-  try {
-    const count = await Game.countDocuments({});
+    try {
+      const count = await Game.countDocuments({});
 
-    const response = await Game.find()
-      .sort({ date: -1 })
-      .skip(skips)
-      .limit(pageSize * 1);
+      const response = await Game.find()
+        .sort({ date: -1 })
+        .skip(skips)
+        .limit(pageSize * 1);
 
-    res.json({ data: response, count });
-  } catch (err) {
-    res.status(500);
-    res.json({ message: `Nie udało się pobrać bazy danych` });
+      res.json({ data: response, count });
+    } catch (err) {
+      res.status(500);
+      res.json({ message: `Nie udało się pobrać bazy danych` });
+    }
+  } else {
+    res.status(403);
+    res.json({ message: `Nie masz dostępu do tych treści.` });
   }
 });
 
