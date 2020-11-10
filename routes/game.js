@@ -184,6 +184,12 @@ const calculateStats = (req, res) => {
   };
 };
 
+router.post("/generateStats", async (req, res) => {
+  const stats = calculateStats(req, res);
+  res.status(200);
+  res.json(stats);
+});
+
 router.post("/add", async (req, res) => {
   if (await isValid(req.headers.authorization)) {
     const stats = calculateStats(req, res);
