@@ -5,9 +5,9 @@ var logger = require("morgan");
 var bodyParser = require("body-parser");
 var cors = require("cors");
 const mongoose = require("mongoose");
-const config = require("./config");
+require("dotenv").config();
 
-mongoose.connect(config.db, {
+mongoose.connect(process.env.DB, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
 });
