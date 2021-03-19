@@ -14,7 +14,7 @@ mongoose.connect(process.env.DB, {
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 
-var { index, game } = require("./routes/index");
+var { index, game, login } = require("./routes/index");
 
 var app = express();
 
@@ -28,5 +28,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", index);
 app.use("/game", game);
+app.use("/login", login);
 
 module.exports = app;

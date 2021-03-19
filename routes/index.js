@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const game = require("./game");
+const login = require("./login");
 const fs = require("fs");
 const path = require("path");
 
@@ -13,4 +14,4 @@ router.get("/", function (req, res, next) {
   res.json({ message: "działa :)" });
 });
 
-module.exports = { index: router, game };
+module.exports = { index: router, game, login };

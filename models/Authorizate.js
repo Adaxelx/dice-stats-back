@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const authorizationSchema = new Schema({
+  login: String,
+  password: String,
   token: String,
 });
 
